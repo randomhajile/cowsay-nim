@@ -18,7 +18,7 @@ Options:
   -w=, --wrap=    int     39             set wrap
 ```
 
-# Example
+# CLI Example
 ```
 $ cowsay nim
  _____
@@ -29,4 +29,21 @@ $ cowsay nim
             (__)\       )\/\
                 ||----w |
                 ||     ||
+```
+
+# Package Example
+Add `cowsay` to your `.nimble` file, then you can import it as follows.
+```nim
+import cowsaypkg/cowsay
+
+when isMainModule:
+  let c = Cow(
+      think: false,
+      message: "Hello, world!",
+      eyes: "oo",
+      tongue: "  ",
+      wrap: 39,
+      file: "stegosaurus.cow"
+  )
+  echo c.say()
 ```
