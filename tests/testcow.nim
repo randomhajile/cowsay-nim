@@ -1,5 +1,6 @@
 import cowsaypkg/cowsay
 import osProc
+import strformat
 import strutils
 import unittest
 from sequtils import map
@@ -14,23 +15,20 @@ const
 
 
 proc getRealCowsay(fname: string, think: bool, message: string): string =
+  ## Invokes the system's `cow(say|think)` command and returns the output.
+  ## Uses poEvalCommand because I had issues with cowthink on Ubuntu in tests.
   let cmd = if think: "cowthink" else: "cowsay"
   return map(
     execProcess(
-      cmd,
-      args = [
-        "-f", fname,
-        "-e", "oo",
-        message
-    ],
-    options = {poUsePath}
+      &"{cmd} -f {fname} -e oo '{message}'",
+      options = {poUsePath, poEvalCommand}
   ).splitLines(),
     proc(x: string): string = x.strip(leading = false),
   ).join("\n").replace("\t", "        ").strip
 
 
 test "hello world matches real cowsay":
-  for fname in walkFiles("data/*.cow"):
+  for fname in walkFiles("src/cowsaypkg/cows/*.cow"):
     let (_, cowName, _) = splitFile(fname)
     for think in [true, false]:
       let
