@@ -18,8 +18,12 @@ jobs:
 
       - name: Install cowsay
         run: |
-          apt-get update -y && apt-get install -y cowsay
+          sudo apt-get update -y
+          sudo apt-get install -y cowsay
           echo "/usr/games" >> $GITHUB_PATH
+
+      - name: Update Nimble packages.
+        run: nimble refresh
 
       - name: Run tests
         run: nimble test
