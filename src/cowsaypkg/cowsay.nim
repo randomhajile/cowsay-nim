@@ -1,5 +1,5 @@
 from sequtils import concat, map
-from strutils import join, multireplace, repeat, splitWhitespace, toLower
+from strutils import join, multireplace, repeat, splitWhitespace, strip, toLower
 from os import absolutePath, fileExists, joinPath, parentDir
 
 
@@ -40,7 +40,7 @@ proc chunk(s: string, size: int): seq[string] =
     currentLength = 0
 
   for piece in pieces:
-    if len(piece) + currentLength > size:
+    if len(current) > 0 and len(piece) + currentLength > size:
       result.add(joiner(current))
       current = @[]
       currentLength = 0
@@ -51,7 +51,7 @@ proc chunk(s: string, size: int): seq[string] =
       workingPiece = piece[size ..< len(workingPiece)]
 
     current.add(workingPiece)
-    currentLength += len(workingPiece)
+    currentLength += len(workingPiece) + 1
 
   result.add(joiner(current))
 
@@ -67,6 +67,25 @@ proc formatCow(cow: Cow, contents: string): string =
   result = multireplace(contents, replacements)
 
 
+proc thoughtBubbleText(pieces: seq[string]): string =
+  join(
+    map(pieces, proc(x: string): string = "( " & x & " )\n"),
+    ""
+  )
+
+
+proc speechBubbleText(pieces: seq[string]): string =
+  if len(pieces) == 1:
+    return "< " & pieces[0] & " >\n"
+
+  result = "/ " & pieces[0] & " \\\n"
+  result &= join(
+    map(pieces[1 ..< ^1], proc(x: string): string = "| " & x & " |\n"),
+    ""
+  )
+  result &= "\\ " & pieces[^1] & " /\n"
+
+
 proc bubble(cow: Cow): string =
   ## Formats the bubble for the cow.
   var pieces = chunk(cow.message, cow.wrap)
@@ -76,14 +95,10 @@ proc bubble(cow: Cow): string =
     bottom = " -" & '-'.repeat(length) & "-\n"
 
   pieces = map(pieces, proc(x: string): string = fill(x, " ", length))
-  if len(pieces) == 1:
-    return top & "< " & pieces[0] & " >\n" & bottom
-
-  var body = ""
-  body &= "/ " & pieces[0] & " \\\n"
-  for piece in pieces[1 ..< len(pieces) - 1]:
-    body &= "| " & piece & " |\n"
-  body &= "\\ " & pieces[^1] & " /\n"
+  let body = if cow.think:
+               thoughtBubbleText(pieces)
+             else:
+               speechBubbleText(pieces)
 
   return top & body & bottom
 
