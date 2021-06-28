@@ -11,4 +11,4 @@ bin           = @["cowsay", "cowthink"]
 
 # Dependencies
 
-requires "nim >= 1.5.1", "cligen"
+requires "nim >= 1.4.8", "cligen"
