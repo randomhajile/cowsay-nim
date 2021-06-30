@@ -16,11 +16,20 @@ jobs:
         with:
           nim-version: 1.4.8
 
+      # Install from repo because the cowsay available in apt
+      # doesn't have all the cows.
+      - name: Fetch cowsay
+        run: git clone https://github.com/schacon/cowsay.git /tmp/cowsay
+
       - name: Install cowsay
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y cowsay
-          echo "/usr/games" >> $GITHUB_PATH
+        working-directory: /tmp/cowsay
+        run: sudo ./install.sh /usr/local
+
+      - name: Check which cowthink
+        run: which cowthink
+
+      - name: Think something
+        run: cowthink whatever
 
       - name: Update Nimble packages.
         run: nimble refresh
