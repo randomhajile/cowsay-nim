@@ -12,9 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install nim
-        uses: jiro4989/setup-nim-action@v1.3.4
-        with:
-          nim-version: 1.4.8
+        uses: jiro4989/setup-nim-action@v1.4.6
 
       # Install from repo because the cowsay available in apt
       # doesn't have all the cows.
